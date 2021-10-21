@@ -1,17 +1,21 @@
-import pprint
-import numpy as np
+# necessary imports
+from random import sample
 import pprint
 
-### Create a random Sudoku Bard ###
+
+### Create a random Sudoku Board ###
+# set the size of the board
 base  = 3
 side  = base*base
 
-# pattern for a baseline valid solution
-def pattern(r,c): return (base*(r%base)+r//base+c)%side
+# create the pattern for a baseline valid solution
+def pattern(r,c): 
+    return (base*(r%base)+r//base+c)%side
 
-# randomize rows, columns and numbers (of valid base pattern)
-from random import sample
-def shuffle(s): return sample(s,len(s)) 
+# shuffle and randomize the board
+def shuffle(s): 
+    return sample(s,len(s)) 
+
 rBase = range(base) 
 rows  = [ g*base + r for g in shuffle(rBase) for r in shuffle(rBase) ] 
 cols  = [ g*base + c for g in shuffle(rBase) for c in shuffle(rBase) ]
@@ -20,28 +24,30 @@ nums  = shuffle(range(1,base*base+1))
 # create a full board using randomized baseline pattern
 board = [ [nums[pattern(r,c)] for c in cols] for r in rows ]
 full_board = []
+
 for line in board: 
-    # print(line)
     full_board.append(line)
 pp = pprint.PrettyPrinter(width=41, compact=True)
 print('--Random Sudoku Board--')
 pp.pprint(full_board)
-# create board with missing numbers 
+
+# remove numbers from the board
 squares = side*side
 empties = squares * 3//4
+
 for p in sample(range(squares),empties):
     board[p//side][p%side] = 0
 
 numSize = len(str(side))
 config_board = []
+
 for line in board: 
-    # print("["+" , ".join(f"{n or 0:{numSize}}" for n in line)+"],")
     config_board.append(line)
 pp = pprint.PrettyPrinter(width=41, compact=True)
 print('--Created Sudoku Board--')
 pp.pprint(config_board)
 
-### solve the given Sudoku board ###
+### solve the Sudoku board ###
 def solve(bo):
     """
     Solves a sudoku board using backtracking
@@ -49,6 +55,7 @@ def solve(bo):
     :return: solution
     """
     find = find_empty(bo)
+
     if find:
         row, col = find
     else:
@@ -65,6 +72,7 @@ def solve(bo):
 
     return False
 
+### validate the attempt ###
 def valid(bo, pos, num):
     """
     Returns if the attempted move is valid
@@ -73,17 +81,17 @@ def valid(bo, pos, num):
     :param num: int
     :return: bool
     """
-    # Check row
+    # row check
     for i in range(0, len(bo)):
         if bo[pos[0]][i] == num and pos[1] != i:
             return False
 
-    # Check Col
+    # col check
     for i in range(0, len(bo)):
         if bo[i][pos[1]] == num and pos[1] != i:
             return False
 
-    # Check box
+    # box check
     box_x = pos[1]//3
     box_y = pos[0]//3
 
@@ -94,6 +102,7 @@ def valid(bo, pos, num):
 
     return True
 
+### find the empty spaces on the board ###
 def find_empty(bo):
     """
     finds an empty space in the board
@@ -107,7 +116,7 @@ def find_empty(bo):
 
     return None
 
-
+### print the board ###
 def print_board(bo):
     """
     prints the board

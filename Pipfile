@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 prettier-printer = "*"
-numpy = "*"
 
 [dev-packages]
 
